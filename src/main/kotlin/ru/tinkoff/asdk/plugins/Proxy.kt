@@ -6,14 +6,8 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import io.ktor.client.*
-import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.server.response.*
-import io.ktor.util.*
-import io.ktor.util.pipeline.*
-import io.ktor.util.reflect.*
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import ru.tinkoff.asdk.preprocessor.*
 import ru.tinkoff.asdk.processor.sendRequest
 
@@ -36,7 +30,7 @@ fun Route.proxy(
 ) {
     route("v2/GetQr") {
         handle(client, targetUrl, password, terminalKey, ignoredFields, ignoredPaths) { baseParams, response ->
-            response.modifyGetQrBody(baseParams)
+            response.modifyGetQrBodyIfNeed(baseParams)
         }
     }
     route("{...}") {

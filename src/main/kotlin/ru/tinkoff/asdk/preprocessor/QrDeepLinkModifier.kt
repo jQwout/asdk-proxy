@@ -8,15 +8,13 @@ import java.io.ByteArrayOutputStream
 import java.net.URI
 
 
-suspend fun HttpResponse.modifyGetQrBody(baseParams: Map<String, String>): ByteArray {
-    val schema = baseParams.get("BankScheme")
+suspend fun HttpResponse.modifyGetQrBodyIfNeed(baseParams: Map<String, String>): ByteArray {
+    val schema = baseParams[BANK_SCHEME_KEY]
     val json = Json { ignoreUnknownKeys = true } // создаем экземпляр JSON с возможностью игнорировать неизвестные поля
     val map: Map<String, String> = body()
     if (schema == null) return this.readBytes()
-    val newMap = map.modifyGetQrResponse(schema)
-    val byteOutStream = ByteArrayOutputStream()
-    json.encodeToStream(newMap, byteOutStream)
-    return byteOutStream.toByteArray()
+    return map.modifyGetQrResponse(schema)
+        .encodeToByteArray(json)
 }
 
 fun Map<String, String>.modifyGetQrResponse(bankSchema: String): Map<String, String> {
@@ -30,5 +28,11 @@ private fun String.replaceSchema(bankSchema: String): String {
     return URI(bankSchema, base.host, base.path, base.fragment).toString()
 }
 
+private fun Map<String, String>.encodeToByteArray(json: Json): ByteArray {
+    val byteOutStream = ByteArrayOutputStream()
+    json.encodeToStream(this, byteOutStream)
+    return byteOutStream.toByteArray()
+}
 
+private const val BANK_SCHEME_KEY = "BankScheme"
 private const val DEEPLINK_KEY = "Data"
