@@ -39,7 +39,7 @@ fun Route.proxy(
             response.modifyGetQrBody(baseParams)
         }
     }
-    route("/") {
+    route("{...}") {
         handle(client, targetUrl, password, terminalKey, ignoredFields, ignoredPaths)
     }
 }
@@ -63,7 +63,7 @@ private fun Route.handle(
             contentType = call.request.contentType(),
             targetUrl = targetUrl,
             protocol = "https",
-            path = call.request.path(),
+            path = call.request.uri,
             password = password,
             terminalKey = terminalKey,
             ignoredFields = ignoredFields,

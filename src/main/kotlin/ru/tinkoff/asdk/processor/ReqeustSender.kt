@@ -8,7 +8,7 @@ import ru.tinkoff.asdk.preprocessor.appendPath
 import ru.tinkoff.asdk.preprocessor.modifyBodyIfNeed
 
 suspend fun HttpClient.sendRequest(
-    bodyAsMap: Map<String,String>,
+    bodyAsMap: Map<String, String>,
     httpMethod: HttpMethod,
     contentType: ContentType,
     targetUrl: String,
@@ -31,7 +31,9 @@ suspend fun HttpClient.sendRequest(
     return request(targetUrl.appendPath(protocol, path)) {
         method = HttpMethod(httpMethod.value)
         headers.set(HttpHeaders.Host, targetUrl)
-        contentType(contentType)
-        setBody(modifyRequestBody(bodyAsMap))
+        if (bodyAsMap.isEmpty().not()) {
+            contentType(contentType)
+            setBody(modifyRequestBody(bodyAsMap))
+        }
     }
 }
